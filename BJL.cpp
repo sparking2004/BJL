@@ -46,7 +46,7 @@ BOOL CBJLApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 	
 	CWinApp::InitInstance();
-
+	
 	AfxEnableControlContainer();
 
 	// Standard initialization
