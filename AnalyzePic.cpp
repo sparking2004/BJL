@@ -5,7 +5,7 @@
 
 using namespace std;
 
-static CCompareRGB g_gridLineClr(RGB(149,149,148),20);
+static CCompareRGB g_gridLineClr(RGB(149,149,148),60);
 static CCompareRGB g_redClr(RGB(255,0,0),100);
 static CCompareRGB g_greenClr(RGB(0,255,0),100);
 static CCompareRGB g_blueClr(RGB(0,0,255),100);
@@ -141,8 +141,13 @@ CString CAnalyzePic::AnalyzePic(const CString& strPic)
 				strParse+=strCellClr;
 			}
 		}
-	}
 
+		strParse+=_T("/");
+	}
+	if (!strParse.IsEmpty() && (strParse[0]=='/'))
+	{
+		strParse.Delete(0);
+	}
 	return strParse;
 }
 
@@ -175,27 +180,27 @@ CString	CAnalyzePic::GetCellClr(CImage& img,const std::vector<int>& VPosVec,int 
 
 	if (nRed>nBlue)
 	{
-		if (nGreen>0)
-		{
-			//0代表红色中有绿色的
-			strClr+=g_cRedGreen;
-		}
-		else
-		{
+// 		if (nGreen>0)
+// 		{
+// 			//0代表红色中有绿色的
+// 			strClr+=g_cRedGreen;
+// 		}
+// 		else
+// 		{
 			strClr+=g_cRed;
-		}
+//		}
 	}
 	else
 	{
-		if (nGreen)
-		{
-			//1代表蓝色中有绿色的
-			strClr+=g_cBlueGreen;
-		}
-		else
-		{
+// 		if (nGreen)
+// 		{
+// 			//1代表蓝色中有绿色的
+// 			strClr+=g_cBlueGreen;
+// 		}
+// 		else
+// 		{
 			strClr+=g_cBlue;
-		}
+//		}
 	}
 	return strClr;
 }

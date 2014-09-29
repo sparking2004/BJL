@@ -44,9 +44,9 @@ BOOL CBJLApp::InitInstance()
 	// in your application.
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
-//test
+
 	CWinApp::InitInstance();
-	
+
 	AfxEnableControlContainer();
 
 	// Standard initialization

@@ -43,12 +43,15 @@ public:
 	CString GetModulePath();
 	void	ShowPage();
 	void	ShowCollectPicNum();
+	CString GetChineseID(const CString& strID);
 public:
 	CMapStringToString m_IDToFileMap;
 	std::vector<CString> m_strPathVec;
-	std::vector<CString> m_matchPicVec;
+	std::vector<std::pair<CString,CString>> m_matchIDToPicVec;
 	CString				 m_searchPic;
 	int					 m_paintPicIndex;
+	bool				 m_bCopyFile;
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
 };

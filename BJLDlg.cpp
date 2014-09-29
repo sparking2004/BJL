@@ -52,6 +52,7 @@ CBJLDlg::CBJLDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_paintPicIndex = 0;
+	m_bCopyFile = true;
 }
 
 void CBJLDlg::DoDataExchange(CDataExchange* pDX)
@@ -68,6 +69,7 @@ BEGIN_MESSAGE_MAP(CBJLDlg, CDialog)
 	ON_BN_CLICKED(IDC_SEARCH, &CBJLDlg::OnBnClickedSearch)
 	ON_BN_CLICKED(IDC_BUTTON1, &CBJLDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CBJLDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CBJLDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -157,14 +159,16 @@ void CBJLDlg::OnPaint()
 			}
 		}
 		
-		for (size_t i=m_paintPicIndex; i<m_matchPicVec.size() && i<m_paintPicIndex+2; ++i)
+		for (size_t i=m_paintPicIndex; i<m_matchIDToPicVec.size() && i<m_paintPicIndex+2; ++i)
 		{
-			CString strmatchPic = GetDataDir()+m_matchPicVec[i];
+			CString strmatchPic = GetDataDir()+m_matchIDToPicVec[i].second;
 			CFileFind ff;
 			if (ff.FindFile(strmatchPic))
 			{
-				DWORD ctrlID = (i%2==0)?IDC_PIC1:IDC_PIC2;
+				DWORD debugID = (i%2==0)?IDC_DEBUG_SHOWID1:IDC_DEBUG_SHOWID2;
+				GetDlgItem(debugID)->SetWindowText(GetChineseID(m_matchIDToPicVec[i].first));
 
+				DWORD ctrlID = (i%2==0)?IDC_PIC1:IDC_PIC2;
 				CRect rc;
 				GetDlgItem(ctrlID)->GetWindowRect(rc);
 				ScreenToClient(rc);
@@ -189,6 +193,9 @@ void CBJLDlg::EnableBtn(BOOL bEnable)
 {
 	GetDlgItem(IDC_ANALYZE)->EnableWindow(bEnable);
 	GetDlgItem(IDC_SEARCH)->EnableWindow(bEnable);
+	GetDlgItem(IDC_BUTTON1)->EnableWindow(bEnable);
+	GetDlgItem(IDC_BUTTON2)->EnableWindow(bEnable);
+	GetDlgItem(IDC_BUTTON3)->EnableWindow(bEnable);
 }
 
 void CBJLDlg::ShowMsg(const CString& strMsg)
@@ -279,14 +286,22 @@ UINT Analyze(LPVOID pParam)
 		}
 		else
 		{
-			if (CopyFile(strFilePath,pDlg->GetDataDir()+strFileName,TRUE))
+			if (pDlg->m_bCopyFile)
 			{
-				pDlg->m_IDToFileMap.SetAt(strID,strFileName);
+				if (CopyFile(strFilePath,pDlg->GetDataDir()+strFileName,TRUE))
+				{
+					pDlg->m_IDToFileMap.SetAt(strID,strFileName);
+				}
+				else
+				{
+					pDlg->MsgBox(_T("´æÔÚÏàÍ¬Ãû³ÆµÄÍ¼Æ¬£¡"));
+				}
 			}
 			else
 			{
-				pDlg->MsgBox(_T("´æÔÚÏàÍ¬Ãû³ÆµÄÍ¼Æ¬£¡"));
+				pDlg->m_IDToFileMap.SetAt(strID,strFileName);
 			}
+			
 		}
 	}
 	pDlg->Save();
@@ -319,6 +334,7 @@ void CBJLDlg::OnBnClickedAnalyze()
 		{
 			m_strPathVec.push_back(loadDlg.GetNextPathName(pos));
 		}
+		m_bCopyFile = true;
 		AfxBeginThread(Analyze,this);
 	}
 }
@@ -330,7 +346,7 @@ void CBJLDlg::OnBnClickedSearch()
 	if(loadDlg.DoModal()==IDOK)
 	{
 		m_paintPicIndex = 0;
-		m_matchPicVec.clear();
+		m_matchIDToPicVec.clear();
 		m_searchPic = loadDlg.GetPathName();
 		CAnalyzePic analyzePic;
 		CString strID = analyzePic.AnalyzePic(m_searchPic);
@@ -339,9 +355,10 @@ void CBJLDlg::OnBnClickedSearch()
 			MessageBox(_T("ÊäÈëµÄÍ¼Æ¬·ÖÎö´íÎó£¡"));
 			return;
 		}
-#ifdef _DEBUG
-		GetDlgItem(IDC_DEBUG_SHOWID)->SetWindowText(strID);
-#endif
+		
+		
+		GetDlgItem(IDC_DEBUG_SHOWID)->SetWindowText(GetChineseID(strID));
+
 		POSITION pos = NULL;
 		for(pos=m_IDToFileMap.GetStartPosition(); pos!=NULL;)
 		{
@@ -349,16 +366,26 @@ void CBJLDlg::OnBnClickedSearch()
 			m_IDToFileMap.GetNextAssoc(pos, strKey, strPic);
 			if (strKey.Find(strID)==0)
 			{
-				m_matchPicVec.push_back(strPic);
+				m_matchIDToPicVec.push_back(std::make_pair(strKey,strPic));
 			}
 		}
 		ShowPage();
 		Invalidate();
-		if (m_matchPicVec.empty())
+		if (m_matchIDToPicVec.empty())
 		{
 			MessageBox(_T("Î´ÕÒµ½Æ¥ÅäµÄÍ¼°¸£¡"));
 		}
 	}
+}
+
+CString CBJLDlg::GetChineseID(const CString& strID)
+{
+	CString strTmp(strID);
+	strTmp.Replace(_T("r"),_T("ºì"));
+	strTmp.Replace(_T("0"),_T("ºìÂÌ"));
+	strTmp.Replace(_T("b"),_T("À¶"));
+	strTmp.Replace(_T("1"),_T("À¶ÂÌ"));
+	return strTmp;
 }
 
 
@@ -377,7 +404,7 @@ void CBJLDlg::OnBnClickedButton1()
 void CBJLDlg::OnBnClickedButton2()
 {
 	// TODO: Add your control notification handler code here
-	if (m_paintPicIndex+2>=m_matchPicVec.size())
+	if (m_paintPicIndex+2>=m_matchIDToPicVec.size())
 	{
 		return;
 	}
@@ -387,9 +414,41 @@ void CBJLDlg::OnBnClickedButton2()
 
 void CBJLDlg::ShowPage()
 {
-	int total = ceil(m_matchPicVec.size()/2.0);
+	int total = ceil(m_matchIDToPicVec.size()/2.0);
 	CString strShowPage;
 	strShowPage.Format(_T("%d/%dÒ³"),m_paintPicIndex/2+1,total);
 	GetDlgItem(IDC_SHOWPAGE)->SetWindowText(strShowPage);
 	Invalidate();
+}
+
+void CBJLDlg::OnBnClickedButton3()
+{
+	// TODO: Add your control notification handler code here
+	m_strPathVec.clear();
+	CString strDataDir = GetDataDir();
+	CFileFind ff;
+	BOOL bFind = ff.FindFile(strDataDir+_T("*.jpg"));
+	while(bFind)
+	{
+		bFind = ff.FindNextFile();
+		m_strPathVec.push_back(ff.GetFilePath());
+	}
+
+	bFind = ff.FindFile(strDataDir+_T("*.png"));
+	while(bFind)
+	{
+		bFind = ff.FindNextFile();
+		m_strPathVec.push_back(ff.GetFilePath());
+	}
+
+	bFind = ff.FindFile(strDataDir+_T("*.bmp"));
+	while(bFind)
+	{
+		bFind = ff.FindNextFile();
+		m_strPathVec.push_back(ff.GetFilePath());
+	}
+	m_bCopyFile = false;
+	m_IDToFileMap.RemoveAll();
+	AfxBeginThread(Analyze,this);
+
 }
