@@ -51,6 +51,7 @@ public:
 	CString				 m_searchPic;
 	int					 m_paintPicIndex;
 	bool				 m_bCopyFile;
+	BOOL				 m_bTip;	///< 是否显示提示
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();

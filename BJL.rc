@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (P.R.C.) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -106,6 +104,16 @@ BEGIN
     PUSHBUTTON      "对样例库重新分析",IDC_BUTTON3,408,7,72,14
 END
 
+IDD_MSGDLG DIALOGEX 0, 0, 138, 65
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,81,44,50,14
+    CTEXT           "Static",IDC_MSG,7,17,124,8
+    CONTROL         "不再提示",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,48,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -152,7 +160,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -169,6 +177,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 370
     END
+
+    IDD_MSGDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 131
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -178,12 +194,12 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About BJL..."
 END
 
-#endif    // Chinese (P.R.C.) resources
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

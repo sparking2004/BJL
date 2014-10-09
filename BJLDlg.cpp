@@ -5,6 +5,7 @@
 #include "BJL.h"
 #include "BJLDlg.h"
 #include "AnalyzePic.h"
+#include "MsgDlg.h"
 #include <math.h>
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -53,6 +54,7 @@ CBJLDlg::CBJLDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_paintPicIndex = 0;
 	m_bCopyFile = true;
+	m_bTip = true;
 }
 
 void CBJLDlg::DoDataExchange(CDataExchange* pDX)
@@ -212,7 +214,13 @@ void CBJLDlg::ShowCollectPicNum()
 
 void CBJLDlg::MsgBox(const CString& strMsg)
 {
-	MessageBox(strMsg);
+	//MessageBox(strMsg);
+	if (m_bTip)
+	{
+		CMsgDlg dlg(strMsg);
+		dlg.DoModal();
+		m_bTip = dlg.m_bTip;
+	}
 }
 
 CString CBJLDlg::GetDBFile()
@@ -364,7 +372,7 @@ void CBJLDlg::OnBnClickedSearch()
 		{
 			CString strKey,strPic;
 			m_IDToFileMap.GetNextAssoc(pos, strKey, strPic);
-			if (strKey.Find(strID)==0)
+			if (strKey.Find(strID)!=-1)
 			{
 				m_matchIDToPicVec.push_back(std::make_pair(strKey,strPic));
 			}
