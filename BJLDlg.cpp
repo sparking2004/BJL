@@ -219,7 +219,7 @@ void CBJLDlg::MsgBox(const CString& strMsg)
 	{
 		CMsgDlg dlg(strMsg);
 		dlg.DoModal();
-		m_bTip = dlg.m_bTip;
+		m_bTip = !dlg.m_bTip;
 	}
 }
 
